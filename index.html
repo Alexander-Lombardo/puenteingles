@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>English A1 → C2 · Curso interactivo</title>
+  <script>
+    /* apply persisted theme before first paint to avoid a light-mode flash */
+    (function () {
+      try {
+        var t = localStorage.getItem("siteTheme.v1");
+        if (!t && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) t = "dark";
+        if (t === "dark") document.documentElement.setAttribute("data-theme", "dark");
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css?v=9" />
+</head>
+<body data-view="home">
+  <div class="app">
+    <main id="content" class="content" tabindex="-1"></main>
+    <nav id="tabbar" class="tabbar" aria-label="Secciones">
+      <a href="#home" data-tab="home" class="tab">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h13a1 1 0 0 1 1 1v11a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2V5z"/><path d="M18 8h2a1 1 0 0 1 1 1v8a2 2 0 0 1-2 2"/><path d="M7 9h7M7 12.5h7M7 16h4"/></svg>
+        <span>Hoy</span>
+      </a>
+      <a href="#map" data-tab="map" class="tab">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5c-1.6-1.4-3.7-2-6.5-2H4v13h1.5c2.8 0 4.9.6 6.5 2 1.6-1.4 3.7-2 6.5-2H20v-13h-1.5c-2.8 0-4.9.6-6.5 2z"/><path d="M12 6.5v13"/></svg>
+        <span>Lecciones</span>
+      </a>
+      <a href="#review" data-tab="review" class="tab">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="14" height="13" rx="1"/><path d="M7 7V5a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-3"/></svg>
+        <span>Repaso</span>
+        <span class="tab-badge" hidden></span>
+      </a>
+      <a href="#glossary" data-tab="glossary" class="tab">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
+        <span>Glosario</span>
+      </a>
+    </nav>
+  </div>
+  <!-- pomodoro lives here and is moved into the lesson / exercise header by app.js -->
+  <div id="pomo-home" hidden><div id="pomodoro" class="pomodoro" data-state="idle" hidden></div></div>
+
+  <!-- Course data (plain script tags so it works when you open the file directly) -->
+  <script src="speakers.js?v=1"></script>
+  <script src="data/course.js?v=5"></script>
+  <script src="data/lesson-00.js?v=5"></script>
+  <script src="data/lesson-01.js?v=5"></script>
+  <script src="data/lesson-02.js?v=5"></script>
+  <script src="data/lesson-03.js?v=5"></script>
+  <script src="data/lesson-04.js?v=5"></script>
+  <script src="data/lesson-05.js?v=5"></script>
+  <script src="data/lesson-06.js?v=5"></script>
+  <script src="data/lesson-07.js?v=5"></script>
+  <script src="data/lesson-08.js?v=5"></script>
+  <script src="data/lesson-09.js?v=5"></script>
+  <script src="data/lesson-10.js?v=5"></script>
+  <script src="data/lesson-11.js?v=5"></script>
+  <script src="data/lesson-12.js?v=5"></script>
+  <script src="data/lesson-13.js?v=5"></script>
+  <script src="data/lesson-14.js?v=5"></script>
+  <script src="data/lesson-15.js?v=5"></script>
+  <script src="data/lesson-16.js?v=5"></script>
+  <script src="data/lesson-17.js?v=5"></script>
+  <script src="data/lesson-18.js?v=5"></script>
+  <script src="data/lesson-19.js?v=5"></script>
+  <script src="data/lesson-20.js?v=5"></script>
+  <script src="data/lesson-21.js?v=5"></script>
+  <script src="data/lesson-22.js?v=5"></script>
+  <script src="data/lesson-23.js?v=5"></script>
+  <script src="data/lesson-24.js?v=5"></script>
+  <script src="data/lesson-25.js?v=5"></script>
+  <script src="data/lesson-26.js?v=5"></script>
+  <script src="data/lesson-27.js?v=5"></script>
+  <script src="data/lesson-28.js?v=5"></script>
+  <script src="data/lesson-29.js?v=5"></script>
+  <script src="data/lesson-30.js?v=5"></script>
+  <script src="data/lesson-31.js?v=5"></script>
+  <script src="data/lesson-32.js?v=5"></script>
+  <script src="data/lesson-33.js?v=5"></script>
+  <script src="data/lesson-34.js?v=5"></script>
+  <script src="data/lesson-35.js?v=5"></script>
+  <script src="data/lesson-36.js?v=5"></script>
+  <script src="data/lesson-37.js?v=5"></script>
+  <script src="data/lesson-38.js?v=5"></script>
+  <script src="data/lesson-39.js?v=5"></script>
+  <script src="data/lesson-40.js?v=5"></script>
+  <script src="data/lesson-41.js?v=5"></script>
+  <script src="data/lesson-42.js?v=5"></script>
+  <script src="data/lesson-43.js?v=5"></script>
+  <script src="data/lesson-44.js?v=5"></script>
+  <script src="data/lesson-45.js?v=5"></script>
+  <script src="data/lesson-46.js?v=5"></script>
+  <script src="data/lesson-47.js?v=5"></script>
+  <script src="data/lesson-48.js?v=5"></script>
+  <script src="data/lesson-49.js?v=5"></script>
+  <script src="data/lesson-50.js?v=5"></script>
+  <script src="data/lesson-51.js?v=5"></script>
+  <script src="data/lesson-52.js?v=5"></script>
+  <script src="data/lesson-53.js?v=5"></script>
+  <script src="data/lesson-54.js?v=5"></script>
+  <script src="data/lesson-55.js?v=5"></script>
+  <script src="data/lesson-56.js?v=5"></script>
+  <script src="data/lesson-57.js?v=5"></script>
+  <script src="data/lesson-58.js?v=5"></script>
+  <script src="data/lesson-59.js?v=5"></script>
+
+  <!-- optional pre-generated audio map; 404s harmlessly when absent (falls back to TTS) -->
+  <script src="audio/manifest.js?v=2"></script>
+  <script src="app.js?v=12"></script>
+  <script src="shell.js?v=2"></script>
+</body>
+</html>
