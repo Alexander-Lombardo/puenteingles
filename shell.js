@@ -1,8 +1,9 @@
 /* Shell features for the English app: dark-mode toggle, keyboard shortcuts +
    help overlay, and a 25/5 pomodoro. Ported from the unified site's loader.js
    (Spanish UI). Storage keys are shared with the unified site so the theme and
-   pomodoro follow you between apps on the same origin. The toggle buttons are
-   rendered by app.js (Progreso screen), so clicks are handled by delegation. */
+   pomodoro follow you between apps on the same origin. The toggle buttons live
+   in the site header (index.html, [data-theme-toggle]) and on the Progreso
+   screen (app.js, #theme-toggle), so clicks are handled by delegation. */
 (function () {
   "use strict";
 
@@ -37,12 +38,12 @@
     paintThemeButtons();
   }
   function paintThemeButtons() {
-    var btns = document.querySelectorAll("#theme-toggle");
+    var btns = document.querySelectorAll("#theme-toggle, [data-theme-toggle]");
     Array.prototype.forEach.call(btns, function (b) { b.textContent = isDark() ? "Oscuro" : "Claro"; });
   }
   function initTheme() {
     document.addEventListener("click", function (e) {
-      var t = e.target && e.target.closest ? e.target.closest("#theme-toggle") : null;
+      var t = e.target && e.target.closest ? e.target.closest("#theme-toggle, [data-theme-toggle]") : null;
       if (t) { setTheme(!isDark()); e.preventDefault(); }
     });
     window.addEventListener("hashchange", function () { setTimeout(paintThemeButtons, 0); });
@@ -232,6 +233,8 @@
   }
 
   function boot() {
+    var y = document.getElementById("foot-year");
+    if (y) y.textContent = String(new Date().getFullYear());
     initTheme();
     initShortcuts();
     initPomodoro();

@@ -1,7 +1,9 @@
 /* English A1→C2 interactive course (for Spanish speakers) — rendering + audio +
-   exercises + listening + SRS + dashboard, in the "broadsheet" design (bottom tab
-   bar: Hoy · Lecciones · Repaso · Glosario). Pure vanilla JS, no dependencies, no
-   network. Works when index.html is opened directly from disk (file://). State
+   exercises + listening + SRS + dashboard, in the "broadsheet" design (phone:
+   bottom tab bar Hoy · Lecciones · Repaso · Glosario; ≥900px: site header + nav,
+   lesson-index sidebar, footer — see styles.css). A public landing view
+   (#landing) fronts the app for first-time visitors. Pure vanilla JS, no
+   dependencies, no network. Works when index.html is opened directly from disk (file://). State
    persists in localStorage.
 
    Data convention: each vocab/dialogue/etc item carries `en` (the English term —
@@ -467,8 +469,18 @@
   var EX_LABELS = { fill: "rellenar", mc: "opción múltiple", translate: "traducción", listen: "dictado", match: "emparejar", order: "ordenar", "listen-dialogue": "comprensión auditiva", conjugate: "conjugar" };
 
   /* ---------- tab bar + view state ---------- */
+  // first visit (no progress yet) on the web lands on the public front page;
+  // the iOS wrapper (app:// scheme) and returning learners go straight to Hoy
+  function hasProgress() {
+    try { return doneCount() > 0 || Object.keys(loadProgress()).length > 0 || srsCount() > 0 || streakCount() > 0; }
+    catch (e) { return false; }
+  }
+  function isNativeShell() { return location.protocol === "app:"; }
+  function landingFirst() { return !isNativeShell() && !hasProgress(); }
   function viewOf(hash) {
-    if (hash === "" || hash === "home") return "home";
+    if (hash === "landing") return "landing";
+    if (hash === "") return landingFirst() ? "landing" : "home";
+    if (hash === "home") return "home";
     if (hash.indexOf("map") === 0) return "map";
     if (hash === "review") return "review";
     if (hash === "glossary") return "glossary";
@@ -481,16 +493,20 @@
     var hash = (location.hash || "").replace("#", "");
     var view = viewOf(hash);
     if (document.body && document.body.setAttribute) document.body.setAttribute("data-view", view);
-    var bar = document.getElementById("tabbar");
-    if (!bar || !bar.querySelectorAll) return;
-    Array.prototype.forEach.call(bar.querySelectorAll("a[data-tab]"), function (a) {
+    if (!document.querySelectorAll) return; // headless smoke test stubs a minimal document
+    // tab bar (phone) and site header nav (≥900px) share the same data-tab markup
+    Array.prototype.forEach.call(document.querySelectorAll("#tabbar a[data-tab], #site-header a[data-tab]"), function (a) {
       a.classList.toggle("active", a.getAttribute("data-tab") === view);
     });
-    var badge = bar.querySelector(".tab-badge");
-    if (badge) {
-      var due = srsDue().length;
+    var due = srsDue().length;
+    Array.prototype.forEach.call(document.querySelectorAll(".tab-badge"), function (badge) {
       badge.textContent = due > 99 ? "99+" : String(due);
       badge.hidden = !due;
+    });
+    var hs = document.getElementById("header-streak");
+    if (hs) {
+      var streak = streakCount();
+      hs.textContent = streak ? "Racha · " + plural(streak, "día", "días") : "";
     }
   }
   var renderNav = renderTabs; // recordScore() and friends call renderNav()
@@ -542,7 +558,7 @@
       ]));
     }
 
-    c.appendChild(el("section", {}, [
+    c.appendChild(el("section", { class: "today" }, [
       el("div", { class: "kicker muted", text: "Para hoy" }),
       el("div", { class: "today-row" }, [
         el("span", { html: "<strong>" + plural(due, "tarjeta", "tarjetas") + "</strong> por repasar" }),
@@ -559,11 +575,125 @@
         "Tu navegador no ofrece síntesis de voz, así que los controles de escucha están ocultos. Todo lo demás funciona." }));
     }
 
-    c.appendChild(el("section", {}, [
+    c.appendChild(el("section", { class: "home-index" }, [
       el("div", { class: "kicker muted", text: "Índice · " + total + " lecciones" }),
       levelIndex(cont)
     ]));
     window.scrollTo(0, 0);
+  }
+
+  /* ---------- landing (public front page; #landing, or "/" before any progress) ---------- */
+  function renderLanding() {
+    var c = resetContent();
+    var total = (COURSE.outline || []).length;
+    var words = allVocab().length;
+    var started = hasProgress();
+    var cont = firstIncompleteId();
+    var first = lessonById(cont) || COURSE.lessons[0];
+
+    c.appendChild(el("div", { class: "landing-hero" }, [
+      el("div", { class: "rule-double" }),
+      el("div", { class: "dateband" }, [
+        el("span", { text: "Puente Inglés" }),
+        el("span", { text: "Curso de inglés para hispanohablantes" })
+      ]),
+      el("h1", { class: "landing-title masthead-title", text: "Aprende inglés de A1 a C2, una lección al día." }),
+      el("p", { class: "landing-lead", text:
+        "Sesenta lecciones interactivas pensadas para quien habla español: vocabulario con pronunciación, diálogos con audio, la gramática explicada en tu idioma, ejercicios que se corrigen solos y un mazo de repaso que te recuerda lo que estás a punto de olvidar." }),
+      el("div", { class: "landing-cta" }, [
+        el("a", { class: "btn red primary", href: started ? "#home" : "#lesson/" + (first ? first.id : "00"),
+          text: started ? "Continuar donde lo dejaste →" : "Empezar por la lección " + (first ? first.id : "00") + " →" }),
+        el("a", { class: "textlink", href: "#map", text: "Ver el índice completo →" })
+      ]),
+      el("div", { class: "landing-facts" }, [
+        el("span", { class: "fact", html: "<strong>" + total + "</strong>lecciones" }),
+        el("span", { class: "fact", html: "<strong>6</strong>niveles, A1 → C2" }),
+        el("span", { class: "fact", html: "<strong>" + words + "</strong>palabras con audio" }),
+        el("span", { class: "fact", html: "<strong>0 €</strong>sin cuenta ni anuncios" })
+      ])
+    ]));
+
+    var grid = el("div", { class: "landing-grid" });
+    grid.appendChild(el("section", {}, [
+      el("div", { class: "kicker muted", text: "Los seis niveles" }),
+      el("div", { class: "level-grid" }, (COURSE.levels || []).map(function (lv) {
+        var st = levelStats(lv.code);
+        return el("a", { class: "level-card", href: "#map/" + lv.code }, [
+          plate(lv.code, "md"),
+          el("div", { class: "level-card-body" }, [
+            el("div", { class: "level-card-name" }, [lv.name, el("span", { class: "meta", text: st.total + " lecciones" })]),
+            el("div", { class: "level-card-blurb", text: lv.blurb || "" })
+          ])
+        ]);
+      }))
+    ]));
+    grid.appendChild(el("section", {}, [
+      el("div", { class: "kicker muted", text: "Cómo funciona" }),
+      el("ol", { class: "how-list" }, [
+        el("li", {}, [el("span", { html: "<strong>Lee y escucha.</strong>Cada lección abre con objetivos, vocabulario con pronunciación figurada y un diálogo o lectura con voz natural, línea a línea." })]),
+        el("li", {}, [el("span", { html: "<strong>Entiende la gramática en español.</strong>Explicaciones cortas, tablas y una nota de pronunciación centrada en los sonidos que más cuestan." })]),
+        el("li", {}, [el("span", { html: "<strong>Practica y corrige.</strong>Ejercicios de rellenar, traducir, ordenar, emparejar, dictado y comprensión auditiva, con corrección inmediata." })]),
+        el("li", {}, [el("span", { html: "<strong>Repasa justo a tiempo.</strong>Lo que fallas vuelve como tarjeta en el repaso espaciado; tu racha y tu progreso se guardan en este navegador." })])
+      ])
+    ]));
+    c.appendChild(grid);
+
+    if (first && first.vocab && first.vocab.length) {
+      var sample = first.vocab.slice(0, 6).map(function (v) {
+        var attrs = { class: "vocab-row" };
+        if (CAN_AUDIO) { attrs.onclick = function () { speak(v.en); }; attrs.role = "button"; }
+        return el("div", attrs, [
+          el("div", { class: "vocab-main" }, [el("span", { class: "term", text: v.en }), v.say ? el("span", { class: "say", text: v.say }) : null]),
+          el("span", { class: "gloss", text: v.es }),
+          CAN_AUDIO ? icon("speaker", "vocab-ico") : null
+        ]);
+      });
+      c.appendChild(el("section", {}, [
+        eyebrow("Una muestra · Lección " + first.id + " · " + first.title, "r", CAN_AUDIO ? el("span", { class: "hint", text: "toca para oír" }) : null),
+        el("div", { class: "sample-strip vocab-list" }, sample)
+      ]));
+    }
+
+    c.appendChild(el("div", { class: "landing-foot" }, [
+      el("span", { class: "lead italic", text: "Funciona sin conexión y no pide ninguna cuenta: abre la página y empieza." }),
+      el("a", { class: "btn primary", href: started ? "#home" : "#lesson/" + (first ? first.id : "00"), text: started ? "Ir a Hoy →" : "Empezar →" })
+    ]));
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- lesson-index sidebar (wide screens; hidden by CSS on phones) ---------- */
+  function lessonIndex(currentId) {
+    var progress = loadProgress();
+    var curLevel = levelOfId(currentId);
+    var cont = firstIncompleteId();
+    var aside = el("aside", { class: "lesson-index", "aria-label": "Índice de lecciones" }, [
+      el("div", { class: "kicker muted", text: "Índice" })
+    ]);
+    (COURSE.levels || []).forEach(function (lv) {
+      var st = levelStats(lv.code);
+      var box = el("div", { class: "li-level" + (lv.code === curLevel ? "" : " collapsed") });
+      var head = el("a", { class: "li-level-head", href: "#map/" + lv.code, onclick: function (e) {
+        e.preventDefault(); box.classList.toggle("collapsed");
+      } }, [
+        el("span", { class: "code", text: lv.code }),
+        el("span", { class: "name", text: lv.name }),
+        el("span", { class: "count", text: st.done + "/" + st.total })
+      ]);
+      box.appendChild(head);
+      st.ids.forEach(function (id) {
+        var lesson = lessonById(id);
+        var isDone = progress[id] && progress[id].done;
+        var attrs = { class: "li-lesson" + (isDone ? " done" : "") + (id === currentId ? " cur" : "") + (lesson ? "" : " disabled") };
+        if (lesson) attrs.href = "#lesson/" + id;
+        box.appendChild(el(lesson ? "a" : "div", attrs, [
+          el("span", { class: "num", text: id }),
+          el("span", { class: "ttl", text: titleOf(id) }),
+          el("span", { class: "mk", text: isDone ? "✓" : (id === cont && id !== currentId ? "·" : "") })
+        ]));
+      });
+      aside.appendChild(box);
+    });
+    return aside;
   }
 
   /* ---------- Lecciones (el mapa) ---------- */
@@ -793,6 +923,7 @@
     var progress = loadProgress();
     var unit = unitOf(id);
 
+    c.appendChild(lessonIndex(id));
     c.appendChild(screenTop("#map", "Lecciones", true));
     c.appendChild(el("div", { class: "lesson-head" }, [
       plate(lesson.id, "lg"),
@@ -1108,6 +1239,7 @@
     var idx = 0;
     var results = lesson.exercises.map(function () { return null; });
 
+    c.appendChild(lessonIndex(id));
     c.appendChild(screenTop("#lesson/" + id, "Lección " + id, true));
     var pos = el("div", { class: "ex-pos" });
     var stage = el("div", { class: "ex-stage" });
@@ -1373,7 +1505,7 @@
       el("div", { class: "settings" }, [
         el("div", { class: "settings-row" }, [el("span", { text: "Tema" }), el("button", { class: "textlink", id: "theme-toggle", type: "button", text: "Claro" })]),
         el("div", { class: "settings-row" }, [el("span", { text: "Atajos de teclado" }), el("button", { class: "textlink", id: "kbd-help", type: "button", text: "Ver →" })]),
-        el("div", { class: "settings-row" }, [el("span", { text: "Otros idiomas" }), el("a", { class: "textlink", id: "brand", href: "../", text: "Todos los cursos →" })])
+        el("div", { class: "settings-row" }, [el("span", { text: "Acerca del curso" }), el("a", { class: "textlink", href: "#landing", text: "Página principal →" })])
       ])
     ]));
     if (window.SHELL && window.SHELL.paintThemeButtons) window.SHELL.paintThemeButtons();
@@ -1384,7 +1516,8 @@
   function route() {
     var hash = (location.hash || "").replace("#", "");
     renderTabs();
-    if (hash === "" || hash === "home") renderHome();
+    if (hash === "landing" || (hash === "" && landingFirst())) renderLanding();
+    else if (hash === "" || hash === "home") renderHome();
     else if (hash === "map" || hash.indexOf("map/") === 0) renderMap(hash.split("/")[1] || null);
     else if (hash === "review") renderReview();
     else if (hash === "glossary") renderGlossary();

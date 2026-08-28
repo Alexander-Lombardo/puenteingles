@@ -3,7 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>English A1 → C2 · Curso interactivo</title>
+  <title>Puente Inglés · Curso de inglés A1 → C2 para hispanohablantes</title>
+  <meta name="description" content="Curso interactivo de inglés de A1 a C2 para hispanohablantes: 60 lecciones con vocabulario, diálogos con audio, gramática, ejercicios corregidos y repaso espaciado. Gratis, sin cuenta y funciona sin conexión." />
+  <link rel="canonical" href="https://puenteingles.app/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Puente Inglés" />
+  <meta property="og:title" content="Puente Inglés · Aprende inglés de A1 a C2" />
+  <meta property="og:description" content="60 lecciones interactivas para hispanohablantes: audio, gramática, ejercicios y repaso espaciado. Gratis y sin cuenta." />
+  <meta property="og:url" content="https://puenteingles.app/" />
+  <meta property="og:locale" content="es_ES" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="theme-color" content="#f3f2f2" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#1b1a19" media="(prefers-color-scheme: dark)" />
   <script>
     /* apply persisted theme before first paint to avoid a light-mode flash */
     (function () {
@@ -14,9 +25,27 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=9" />
+  <link rel="stylesheet" href="styles.css?v=10" />
 </head>
 <body data-view="home">
+  <!-- website chrome: shown from 900px up (styles.css); phones keep the tab bar below -->
+  <header id="site-header" class="site-header">
+    <div class="site-header-in">
+      <a class="brand" href="#landing">Puente Inglés<span class="brand-sub">inglés A1 → C2</span></a>
+      <nav class="site-nav" aria-label="Secciones">
+        <a href="#home" data-tab="home">Hoy</a>
+        <a href="#map" data-tab="map">Lecciones</a>
+        <a href="#review" data-tab="review">Repaso<span class="nav-badge tab-badge" hidden></span></a>
+        <a href="#glossary" data-tab="glossary">Glosario</a>
+        <a href="#progress" data-tab="progress">Progreso</a>
+      </nav>
+      <div class="site-tools">
+        <span class="streak" id="header-streak"></span>
+        <button class="textlink quiet" type="button" data-theme-toggle title="Cambiar tema">Claro</button>
+        <button class="textlink quiet" type="button" id="kbd-help" title="Atajos de teclado">Atajos ?</button>
+      </div>
+    </div>
+  </header>
   <div class="app">
     <main id="content" class="content" tabindex="-1"></main>
     <nav id="tabbar" class="tabbar" aria-label="Secciones">
@@ -39,6 +68,12 @@
       </a>
     </nav>
   </div>
+  <footer class="site-footer">
+    <div class="site-footer-in">
+      <span>© <span id="foot-year"></span> Puente Inglés · un curso de inglés para hispanohablantes, gratis y sin cuenta.</span>
+      <span class="foot-links"><a href="#landing">Acerca del curso</a><a href="#map">Índice</a><a href="#glossary">Glosario</a><a href="mailto:hola@puenteingles.app">Contacto</a></span>
+    </div>
+  </footer>
   <!-- pomodoro lives here and is moved into the lesson / exercise header by app.js -->
   <div id="pomo-home" hidden><div id="pomodoro" class="pomodoro" data-state="idle" hidden></div></div>
 
@@ -108,7 +143,7 @@
 
   <!-- optional pre-generated audio map; 404s harmlessly when absent (falls back to TTS) -->
   <script src="audio/manifest.js?v=2"></script>
-  <script src="app.js?v=12"></script>
-  <script src="shell.js?v=2"></script>
+  <script src="app.js?v=13"></script>
+  <script src="shell.js?v=3"></script>
 </body>
 </html>
